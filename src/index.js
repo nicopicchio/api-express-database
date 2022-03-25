@@ -7,7 +7,9 @@ app.use(morgan("dev"));
 app.use(bodyParser.json());
 
 //TODO: Implement books and pets APIs here
+const booksRouter = require('./routers/books')
 
+app.use("/books", booksRouter)
 
 const port = 3030;
  
