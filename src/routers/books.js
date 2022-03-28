@@ -84,4 +84,19 @@ booksRouter.post('/', (req, res) => {
 		});
 });
 
+booksRouter.delete('/:id', (req, res) => {
+	db.query('DELETE FROM books WHERE id = $1 RETURNING *', [req.params.id])
+	.then((dbResult) => {
+		if (dbResult.rowCount === 0) {
+			res.status(404);
+			res.json({ error: 'book not found'})
+		} else
+			res.json({ book: dbResult.rows[0]})
+	})
+	.catch((err) => {
+		res.status(500);
+		res.json({ err: 'Unexpected error' })
+	})
+})
+
 module.exports = booksRouter;
