@@ -64,8 +64,7 @@ booksRouter.post('/', (req, res) => {
     publicationDate,
     pages)
     VALUES ($1, $2, $3, $4, $5, $6)
-    RETURNING *
-  `;
+    RETURNING *`;
 	const postBookQueryValues = [
 		req.body.title,
 		req.body.type,
@@ -91,11 +90,48 @@ booksRouter.delete('/:id', (req, res) => {
 			res.status(404);
 			res.json({ error: 'book not found'})
 		} else
-			res.json({ book: dbResult.rows[0]})
+		res.json({ book: dbResult.rows[0]})
 	})
 	.catch((err) => {
 		res.status(500);
 		res.json({ err: 'Unexpected error' })
+	})
+})
+
+booksRouter.put('/:id', (req, res) => {
+	const putBookQuery = `
+	UPDATE books
+	SET
+	title = $1,
+	type = $2,
+	author = $3,
+	topic = $4,
+	publicationDate = $5,
+	pages = $6
+	WHERE id = $7
+	RETURNING *`
+
+	const putBookQueryValues = [
+		req.body.title,
+		req.body.type,
+		req.body.author,
+		req.body.topic,
+		req.body.publicationDate,
+		req.body.pages,
+		req.params.id
+	]
+
+	db.query(putBookQuery, putBookQueryValues)
+	.then(dbResult => {
+		if (dbResult.rowCount === 0) {
+			res.status(404)
+			res.json('book not found')
+		} else
+		res.json({book: dbResult.rows[0]})
+	})
+	.catch(err => {
+		res.status(500)
+		res.json({error: 'unexpected error'})
 	})
 })
 
